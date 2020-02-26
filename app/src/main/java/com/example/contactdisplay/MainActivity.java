@@ -1,8 +1,10 @@
 package com.example.contactdisplay;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -104,6 +106,30 @@ public class MainActivity extends AppCompatActivity
         contact_list_btn.setOnClickListener(view1 -> {
             Toast.makeText(this, contactAdapter.getSelectedContacts().toString(), Toast.LENGTH_SHORT).show();
         });
+
+
+        searchView = findViewById(R.id.action_search);
+        SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchAutoComplete.setHintTextColor(Color.WHITE);
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(this.getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint("Search Contact");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                contactAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                contactAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+
     }
 
     public void getContactsIntoArrayList() {
@@ -137,31 +163,32 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.search_menu,menu);
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        searchAutoComplete.setHintTextColor(Color.WHITE);
-
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(this.getComponentName()));
-        searchView.setMaxWidth(Integer.MAX_VALUE);
-        searchView.setQueryHint("Search Contact");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                contactAdapter.getFilter().filter(query);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                contactAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        getMenuInflater().inflate(R.menu.search_menu,menu);
+//
+//        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//        SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+//        searchAutoComplete.setHintTextColor(Color.WHITE);
+//
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(this.getComponentName()));
+//        searchView.setMaxWidth(Integer.MAX_VALUE);
+//        searchView.setQueryHint("Search Contact");
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                contactAdapter.getFilter().filter(query);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                contactAdapter.getFilter().filter(newText);
+//                return false;
+//            }
+//        });
+//        return true;
+//    }
 
 }
