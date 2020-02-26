@@ -1,5 +1,6 @@
 package com.example.contactdisplay;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.Menu;
@@ -41,28 +43,53 @@ public class MainActivity extends AppCompatActivity
     public static final int RequestPermissionCode = 1;
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode==RequestPermissionCode)
+        {
+            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+            StoreContacts = new ArrayList<>();
+            getContactsIntoArrayList();
+            calculateIndexesForName(StoreContacts);
+            contactAdapter = new ContactAdapter(StoreContacts, mapIndex, this);
+            recyclerView.setAdapter(contactAdapter);
+
+            FastScrollRecyclerViewItemDecoration decoration = new FastScrollRecyclerViewItemDecoration(this);
+            recyclerView.addItemDecoration(decoration);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+        }
+        else
+        {
+            Toast.makeText(this, "Not granted", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recycler_contact);
 
-//        searchView = view.findViewById(R.id.action_search);
-        searchManager = (SearchManager) this.getSystemService(Context.SEARCH_SERVICE);
-
-        contact_list_btn = findViewById(R.id.show_data);
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-        StoreContacts = new ArrayList<>();
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+        {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, RequestPermissionCode);
-        } else {
+        }
+        else
+            {
+                recyclerView = findViewById(R.id.recycler_contact);
+//      searchView = view.findViewById(R.id.action_search);
+                searchManager = (SearchManager) this.getSystemService(Context.SEARCH_SERVICE);
 
+                contact_list_btn = findViewById(R.id.show_data);
+
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            StoreContacts = new ArrayList<>();
             getContactsIntoArrayList();
             calculateIndexesForName(StoreContacts);
             contactAdapter = new ContactAdapter(StoreContacts, mapIndex, this);
@@ -136,4 +163,5 @@ public class MainActivity extends AppCompatActivity
         });
         return true;
     }
+
 }
